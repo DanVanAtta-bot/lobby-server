@@ -3,10 +3,8 @@ package org.triplea.web.socket;
 import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerEndpointConfig;
-import java.net.InetAddress;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.ConfigProvider;
 
 /**
  * Captures the client IP from the WebSocket handshake and stores it in user properties.
@@ -30,7 +28,7 @@ public class RemoteAddressConfigurator extends ServerEndpointConfig.Configurator
       final HandshakeRequest request,
       final HandshakeResponse response) {
     final List<String> forwardedFor = request.getHeaders().get("X-Forwarded-For");
-    log.info("IP address forwarded for: {}",  forwardedFor);
+    log.info("IP address forwarded for: {}", forwardedFor);
     if (forwardedFor != null && !forwardedFor.isEmpty()) {
       // X-Forwarded-For may be "client, proxy1, proxy2" — take the leftmost (original client)
       final String ip = forwardedFor.get(0).split(",")[0].trim();
