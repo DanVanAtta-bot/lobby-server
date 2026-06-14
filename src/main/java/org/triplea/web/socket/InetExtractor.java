@@ -1,9 +1,8 @@
 package org.triplea.web.socket;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Splitter;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.InetSocketAddress;
 import java.util.Map;
 import lombok.experimental.UtilityClass;
 
@@ -14,24 +13,12 @@ public class InetExtractor {
   public static final String IP_ADDRESS_KEY = "jakarta.websocket.endpoint.remoteAddress";
 
   /**
-   * Returns the IP address of the session from the provided 'userSession' map. It is expected that
-   * for the websocket library that we use that we will always find an IP address.
+   * Returns the IP address of the session from the provided 'userSession' map. The value is expected
+   * to be an {@link InetSocketAddress} injected by {@link RemoteAddressConfigurator}; it is expected
+   * that we will always find one.
    */
   public static InetAddress extract(final Map<String, Object> userSession) {
-    // expected format '/127.0.0.1:42840' or (for test-cases) '127.0.0.1'
-    final String rawIpString = String.valueOf(userSession.get(IP_ADDRESS_KEY));
-
-    final String ipString =
-        rawIpString.startsWith("/") //
-            ? rawIpString.substring(1)
-            : rawIpString;
-
-    try {
-      final String ip = Splitter.on(':').splitToList(ipString).get(0);
-      return InetAddress.getByName(ip);
-    } catch (final UnknownHostException e) {
-      // not expected
-      throw new AssertionError("Unexpected bad hostname: " + userSession.get(IP_ADDRESS_KEY), e);
-    }
+    final InetSocketAddress remote = (InetSocketAddress) userSession.get(IP_ADDRESS_KEY);
+    return remote.getAddress();
   }
 }
