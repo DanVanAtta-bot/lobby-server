@@ -41,7 +41,7 @@ run: ## Runs a local lobby (with database) — Quarkus Dev Services starts Postg
 	./gradlew quarkusDev
 
 compose:
-	docker compose up --build
+	./gradlew build && docker compose up --build
 
 deploy-prod: ## Triggers prod to pull latest docker, run flyway and restart services
 	ANSIBLE_CONFIG="deploy/ansible.cfg" \
