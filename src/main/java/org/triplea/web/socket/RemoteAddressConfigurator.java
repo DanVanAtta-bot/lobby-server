@@ -34,20 +34,6 @@ public class RemoteAddressConfigurator extends ServerEndpointConfig.Configurator
       // X-Forwarded-For may be "client, proxy1, proxy2" — take the leftmost (original client)
       final String ip = forwardedFor.get(0).split(",")[0].trim();
       sec.getUserProperties().put(InetExtractor.IP_ADDRESS_KEY, ip);
-    } else {
-      final boolean enforcing =
-          ConfigProvider.getConfig()
-              .getOptionalValue("app.websocket.ip-enforcing", Boolean.class)
-              .orElse(true);
-      if (enforcing) {
-        log.warn(
-            "WebSocket connection has no X-Forwarded-For header — connection will be rejected");
-      } else {
-        log.warn(
-            "WebSocket connection has no X-Forwarded-For header — using loopback (non-enforcing mode)");
-        sec.getUserProperties()
-            .put(InetExtractor.IP_ADDRESS_KEY, InetAddress.getLoopbackAddress().getHostAddress());
-      }
     }
   }
 }
